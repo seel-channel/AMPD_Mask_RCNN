@@ -14,7 +14,7 @@ import shutil
 import zipfile
 
 # Root directory of the project
-ROOT_DIR = os.path.abspath("/content/Mask_RCNN")
+ROOT_DIR = os.path.abspath("/content/AMPD_Mask_RCNN")
 print("VERS 0.2")
 
 # Import Mask RCNN
