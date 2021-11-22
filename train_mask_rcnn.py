@@ -16,6 +16,7 @@ import zipfile
 # Root directory of the project
 ROOT_DIR = os.path.abspath("/content/Mask_RCNN")
 print("VERS 0.2")
+
 # Import Mask RCNN
 sys.path.append(ROOT_DIR)  # To find local version of the library
 from mrcnn.config import Config
@@ -27,9 +28,6 @@ from PIL import Image, ImageDraw
 
 import warnings
 warnings.filterwarnings('ignore')
-
-
-# DRIVE_ROOT_DIR = "/content/gdrive/MyDrive/pysource_mrcnn_pro/"
 
 # Local path to trained weights file
 COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
@@ -216,13 +214,8 @@ class CustomDataset(utils.Dataset):
         class_number = len(class_ids)
         return class_number
 
-# Directory to save logs and trained model
-MODEL_DIR = os.path.join(ROOT_DIR, "logs")
-
-def load_training_model(config, project_name, init_with="coco"):
-    model_dir = os.path.join(DRIVE_ROOT_DIR, project_name)
-    model = modellib.MaskRCNN(mode="training", config=config,
-                              model_dir=model_dir)
+def load_training_model(config, model_dir, init_with="coco"):
+    model = modellib.MaskRCNN(mode="training", config=config, model_dir=model_dir)
 
     # Which weights to start with?
     # = "coco"  # imagenet, coco, or last
@@ -303,9 +296,8 @@ def extract_images(my_zip, output_dir):
         print("Extracted: {} images".format(count))
 
 
-def load_test_model(num_classes, project_name):
+def load_test_model(num_classes, model_dir):
     inference_config = InferenceConfig(num_classes)
-    model_dir = os.path.join(DRIVE_ROOT_DIR,  project_name)
     # Recreate the model in inference mode
     model = modellib.MaskRCNN(mode="inference",
                               config=inference_config,
@@ -343,33 +335,6 @@ def test_random_image(test_model, dataset_val, inference_config):
     print("Annotation")
     visualize.display_instances(original_image, gt_bbox, gt_mask, gt_class_id,
                                 dataset_val.class_names, figsize=(12, 12))
-
-
-
-# Connect google drive
-def connect_google_drive(project_name):
-    from google.colab import drive
-    drive.mount('/content/gdrive')
-
-    model_dir = os.path.join(DRIVE_ROOT_DIR, project_name)
-    if not os.path.exists(model_dir):
-        os.makedirs(model_dir)
-        print("New project created {}".format(project_name))
-        print("You'll find the project on Google Drive, on the folder pysource_mrcnn_pro/{} .".format(project_name))
-    else:
-        print("Project {} already exists. Editing existing project.".format(project_name))
-    return model_dir
-
-def create_mrcnn_output_directory(project_name):
-    model_dir = os.path.join(DRIVE_ROOT_DIR,  project_name)
-    if not os.path.exists(model_dir):
-        os.makedirs(model_dir)
-        print("New project created {}".format(project_name))
-        print("You'll find the project on Google Drive, pysource_mrcnn_pro/{} .".format(project_name))
-    else:
-        print("Project {} already exists. Editing existing project.".format(project_name))
-    return model_dir
-
 
 def model_evaluation(dataset_val, test_model, inference_config):
     APs = []
